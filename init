@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+function configure_init()
+{
+    set -x
+    export PATH=/sbin:/bin
+}
+function configure_fs()
+{
+    mount -o remount,rw /
+
+    mount -t proc proc /proc
+    mount -t sysfs sys /sys
+
+    # /dev/ptmx
+    mkdir -p /dev/pts
+    mount -t devpts devpts /dev/pts
+}
+function configure_net()
+{
+    ip l s dev lo up
+    dhcpcd eth0
+}
+function configure_env()
+{
+    local env=(
+        TERM=xterm
+    )
+    export "${env[@]}"
+}
+function configure_tty()
+{
+    stty rows 50 cols 182
+}
+function parse_cmdline()
+{
+    local args i
+    mapfile -d' ' args < /proc/cmdline
+    for i in "${args[@]}"; do
+        # we do allow backslash escape here
+        IFS='=' read key value <<<"$i"
+        [[ -n $value ]] || continue
+
+        case "$key" in
+            eval)   eval "$value";;
+            shell)  sh -c "$value";;
+            env)    export "${value?}";;
+        esac
+    done
+}
+function main()
+{
+    configure_init
+    configure_fs
+    configure_net
+    configure_env
+    configure_tty
+
+    parse_cmdline
+
+    tmux || bash
+}
+main "$@"
