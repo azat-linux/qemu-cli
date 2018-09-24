@@ -58,7 +58,7 @@ function configure_rootfs()
 
         -r "$mnt"
     )
-    sudo pacman -Sy "${opts[@]}" "${pkgs[@]}"
+    sudo pacman -Sy "${opts[@]}" "${pkgs[@]}" "$@"
 
     sudo cp $(path init) mnt/sbin/
 }
@@ -68,7 +68,7 @@ function main()
 
     mkdir -p mnt
     sudo mount -o loop rootfs.img mnt
-    configure_rootfs mnt
+    configure_rootfs mnt "$@"
     configure_locales mnt
     sudo umount mnt
 }
