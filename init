@@ -35,9 +35,11 @@ function parse_cmdline()
     local args i
     mapfile -d' ' args < /proc/cmdline
     for i in "${args[@]}"; do
+        local key value
         # we do allow backslash escape here
         IFS='=' read key value <<<"$i"
         [[ -n $value ]] || continue
+        value="${value%% }"
 
         case "$key" in
             eval)   eval "$value";;
