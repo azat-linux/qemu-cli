@@ -34,7 +34,7 @@ function configure_rootfs()
         # net
         bind-tools dhcp dhcpcd inetutils iproute2 iputils
         # debug
-        strace tcpdump perf
+        strace tcpdump perf gdb
         # stuff
         tmux
     )
