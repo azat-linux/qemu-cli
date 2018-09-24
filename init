@@ -28,10 +28,8 @@ function configure_env()
     )
     export "${env[@]}"
 }
-function configure_tty()
-{
-    stty rows 50 cols 182
-}
+function configure_tty_minimum()
+{ stty rows 50 cols 182; }
 function parse_cmdline()
 {
     local args i
@@ -45,6 +43,9 @@ function parse_cmdline()
             eval)   eval "$value";;
             shell)  sh -c "$value";;
             env)    export "${value?}";;
+
+            tty.rows) stty rows "$value";;
+            tty.cols) stty cols "$value";;
         esac
     done
 }
@@ -54,7 +55,7 @@ function main()
     configure_fs
     configure_net
     configure_env
-    configure_tty
+    configure_tty_minimum
 
     parse_cmdline
 
