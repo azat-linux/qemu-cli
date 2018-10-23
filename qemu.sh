@@ -46,7 +46,6 @@ function qemu()
         # snapshot by default, <Ctrl-T s> to manually flush
         -drive if=ide,file="$(abspath rootfs.img)",snapshot=on
 
-        -kernel "$(find_kernel)"
         -append "${kernel_opts[*]}"
 
         # <Ctrl-T> as an escape character
@@ -128,6 +127,7 @@ Options:
   -S <size of spare drive>
   -M <size of spare drive in memory>
   -K <kernel arg, cmdline>
+  -k <kernel iamge>
 EOL
 }
 function parse_opts()
@@ -135,17 +135,19 @@ function parse_opts()
     local OPTARG OPTIND c
 
     qemu_args=()
+    kernel_image=$(find_kernel)
     kernel_args=()
     spare_drives=()
     spare_drives_in_mem=()
 
     cleanup_images=()
 
-    while getopts "hS:M:K:" c; do
+    while getopts "hS:M:K:k:" c; do
         case "$c" in
             S) spare_drives+=($OPTARG);;
             M) spare_drives_in_mem+=($OPTARG);;
             K) kernel_args+=($OPTARG);;
+            k) kernel_image=$OPTARG;;
             h) usage && exit 0;;
             *) usage >&2 && exit 1;;
         esac
@@ -170,6 +172,8 @@ function parse_opts()
             "if=ide,file=$img,snapshot=on"
         )
     done
+
+    qemu_args+=( -kernel "$kernel_image" )
 
     shift $(( OPTIND-1 ))
     parse_drives "$@" || return
