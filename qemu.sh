@@ -182,6 +182,6 @@ function main()
 {
     parse_opts "$@" || return
     qemu "${qemu_args[@]}"
-    rm -fr "${cleanup_images[@]?}"
+    [[ -z "${cleanup_images[@]}" ]] || rm -fr "${cleanup_images[@]?}"
 }
 main "$@"
