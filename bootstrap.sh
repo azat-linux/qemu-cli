@@ -24,6 +24,30 @@ function configure_rootfs()
     shift
 
     sudo mkdir -p "$mnt"/var/lib/pacman
+    sudo mkdir -p "$mnt"/dev
+
+    #
+    # /dev/null for dirmngr
+    #
+    # create /dev/null to avoid hanging dirmngr installation
+    # that has "dirmngr </dev/null >&/dev/null" in it's postinstall hook
+    # and without this line it creates regular file with tons of lines like:
+    #
+    #   dirmngr[21273]: No ldapserver file at: '/root/.gnupg/dirmngr_ldapservers.conf'
+    #   dirmngr[21273.0]: permanently loaded certificates: 1
+    #   dirmngr[21273.0]:     runtime cached certificates: 0
+    #   dirmngr[21273.0]:            trusted certificates: 1 (0,0,0,1)
+    #   dirmngr[21273.0]: failed to open cache dir file '/root/.gnupg/crls.d/DIR.txt': No such file or directory
+    #   dirmngr[21273.0]: creating directory '/root/.gnupg'
+    #   dirmngr[21273.0]: creating directory '/root/.gnupg/crls.d'
+    #   dirmngr[21273.0]: new cache dir file '/root/.gnupg/crls.d/DIR.txt' created
+    #   # Home: /root/.gnupg
+    #   # Config: [none]
+    #   OK Dirmngr 2.2.15 at your service
+    #   ERR 167772435 Unknown IPC command <Dirmngr>
+    #   ...
+    #   ERR 167772435 Unknown IPC command <Dirmngr>
+    sudo mknod "$mnt"/dev/null c 1 3
 
     local pkgs=(
         # base
@@ -44,17 +68,6 @@ function configure_rootfs()
         # but some packages requires api headers and without this there will
         # endless loop for resolving dependency
         --assume-installed linux-api-headers=$(uname -r)
-
-        # ignore gnupg, since this interacts with main dirmngr and send a lot
-        # of invalid commands to it:
-        #     read(3, "ERR 167772435 Unknown IPC command <Dirmngr>\nERR 167772435 Unknown IPC command <Dirmngr>\nERR 167772435 Unknown IPC command <Dirmngr>\nERR 167772435 Unknown IPC command <Dirmngr>\nERR 167772435 Unknown IPC command <Dirmngr>\nERR 167772435 Unknown IPC command <Dirmngr>\nERR 167772435 Unknown IPC command <Dirmngr>\nERR 167772435 Unknown IPC command <Dirmngr>\nERR 167772435 Unknown IPC command <Dirmngr>\n", 1002) = 396
-        #     write(4, "ERR 167772435 Unknown IPC command <Dirmngr>", 43) = 43
-        #     write(4, "\n", 1)                       = 1
-        #     write(4, "ERR 167772435 Unknown IPC command <Dirmngr>", 43) = 43
-        #     write(4, "\n", 1)                       = 1
-        --ignore gnupg
-        --ignore gpgme
-        --assume-installed gpgme=1.11.1-2
 
         -r "$mnt"
     )
