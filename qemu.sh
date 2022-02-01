@@ -22,7 +22,7 @@ function qemu()
         console=ttyS0
         root=/dev/vda
         raid=noautodetect
-        panic_on_warn=1
+        # panic_on_warn=1
         panic=-1
         intel_iommu=on
         nokaslr
