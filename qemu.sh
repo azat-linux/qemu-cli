@@ -20,7 +20,7 @@ function qemu()
 {
     local kernel_opts=(
         console=ttyS0
-        root=/dev/sda
+        root=/dev/vda
         raid=noautodetect
         panic_on_warn=1
         panic=-1
@@ -46,7 +46,7 @@ function qemu()
         -serial mon:stdio
 
         # snapshot by default, <Ctrl-T s> to manually flush
-        -drive if=ide,file="$(abspath rootfs.img)",snapshot=on
+        -drive if=virtio,file="$(abspath rootfs.img)",snapshot=on
 
         -append "${kernel_opts[*]}"
 
