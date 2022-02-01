@@ -26,6 +26,8 @@ function qemu()
         panic=-1
         intel_iommu=on
         nokaslr
+        mitigations=off
+        audit=0
 
         "${kernel_args[@]}"
     )
