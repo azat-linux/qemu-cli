@@ -157,13 +157,13 @@ function parse_opts()
                 echo "snapshot mode is used, <Ctrl-T s> to manually flush"
                 drive_opts="snapshot=on"
                 ;;
-            S) spare_drives+=($OPTARG);;
-            M) spare_drives_in_mem+=($OPTARG);;
+            S) spare_drives+=("$OPTARG");;
+            M) spare_drives_in_mem+=("$OPTARG");;
             p) spare_preserve=1;;
-            K) kernel_args+=($OPTARG);;
-            Q) qemu_args+=($OPTARG);;
-            k) kernel_image=$OPTARG;;
-            i) rootfs_image=$OPTARG;;
+            K) kernel_args+=("$OPTARG");;
+            Q) qemu_args+=("$OPTARG");;
+            k) kernel_image="$OPTARG";;
+            i) rootfs_image="$OPTARG";;
             h) usage && exit 0;;
             *) usage >&2 && exit 1;;
         esac
