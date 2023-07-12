@@ -23,6 +23,7 @@ function qemu()
         # panic_on_warn=1
         panic=-1
         intel_iommu=on
+        # breaks debugger
         nokaslr
         mitigations=off
         audit=0
@@ -38,6 +39,7 @@ function qemu()
         -name linux-dev
 
         -no-reboot
+        # shorthand for -gdb tcp::1234
         -s
 
         -nographic
