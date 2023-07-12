@@ -130,6 +130,7 @@ Options:
   -S <size of spare drive>
   -M <size of spare drive in memory>
   -K <kernel arg, cmdline>
+  -Q <qemu args> (i.e. -S)
   -k <kernel image>
   -i <rootfs image>
 EOL
@@ -142,18 +143,20 @@ function parse_opts()
     kernel_image=$(find_kernel)
     rootfs_image=rootfs.img
     kernel_args=()
+    qemu_args=()
     spare_preserve=0
     spare_drives=()
     spare_drives_in_mem=()
 
     cleanup_images=()
 
-    while getopts "hS:M:K:k:i:p" c; do
+    while getopts "hS:M:K:Q:k:i:p" c; do
         case "$c" in
             S) spare_drives+=($OPTARG);;
             M) spare_drives_in_mem+=($OPTARG);;
             p) spare_preserve=1;;
             K) kernel_args+=($OPTARG);;
+            Q) qemu_args+=($OPTARG);;
             k) kernel_image=$OPTARG;;
             i) rootfs_image=$OPTARG;;
             h) usage && exit 0;;
