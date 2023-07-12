@@ -71,7 +71,7 @@ function configure_rootfs()
 
         -r "$mnt"
     )
-    sudo pacman -Sy "${opts[@]}" "${pkgs[@]}" "$@"
+    sudo pacman --noconfirm -Sy "${opts[@]}" "${pkgs[@]}" "$@"
 
     sudo cp $(path init) mnt/sbin/
 }
