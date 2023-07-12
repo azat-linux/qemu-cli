@@ -46,7 +46,7 @@ function qemu()
         -serial mon:stdio
 
         # snapshot by default, <Ctrl-T s> to manually flush
-        -drive if=virtio,file="$(abspath rootfs.img)",snapshot=on
+        -drive if=virtio,file="$rootfs_image",snapshot=on
 
         -append "${kernel_opts[*]}"
 
@@ -129,7 +129,8 @@ Options:
   -S <size of spare drive>
   -M <size of spare drive in memory>
   -K <kernel arg, cmdline>
-  -k <kernel iamge>
+  -k <kernel image>
+  -i <rootfs image>
 EOL
 }
 function parse_opts()
@@ -138,18 +139,20 @@ function parse_opts()
 
     qemu_args=()
     kernel_image=$(find_kernel)
+    rootfs_image=$(abspath rootfs.img)
     kernel_args=()
     spare_drives=()
     spare_drives_in_mem=()
 
     cleanup_images=()
 
-    while getopts "hS:M:K:k:" c; do
+    while getopts "hS:M:K:k:i:" c; do
         case "$c" in
             S) spare_drives+=($OPTARG);;
             M) spare_drives_in_mem+=($OPTARG);;
             K) kernel_args+=($OPTARG);;
             k) kernel_image=$OPTARG;;
+            i) rootfs_image=$OPTARG;;
             h) usage && exit 0;;
             *) usage >&2 && exit 1;;
         esac
