@@ -46,7 +46,7 @@ function qemu()
         -serial mon:stdio
 
         # snapshot by default, <Ctrl-T s> to manually flush
-        -drive if=virtio,file="$rootfs_image",snapshot=on
+        -drive if=virtio,file="$rootfs_image",$drive_opts
 
         -append "${kernel_opts[*]}"
 
@@ -142,6 +142,7 @@ function parse_opts()
     qemu_args=()
     kernel_image=$(find_kernel)
     rootfs_image=rootfs.img
+    drive_opts=()
     kernel_args=()
     qemu_args=()
     spare_preserve=0
@@ -150,8 +151,12 @@ function parse_opts()
 
     cleanup_images=()
 
-    while getopts "hS:M:K:Q:k:i:p" c; do
+    while getopts "hsS:M:K:Q:k:i:p" c; do
         case "$c" in
+            s)
+                echo "snapshot mode is used, <Ctrl-T s> to manually flush"
+                drive_opts="snapshot=on"
+                ;;
             S) spare_drives+=($OPTARG);;
             M) spare_drives_in_mem+=($OPTARG);;
             p) spare_preserve=1;;
@@ -170,7 +175,7 @@ function parse_opts()
         [ $spare_preserve -eq 1 ] || cleanup_images+=( "$img" )
         qemu_args+=(
             "-drive"
-            "if=ide,file=$img,snapshot=on"
+            "if=ide,file=$img,$drive_opts"
         )
     done
 
@@ -180,7 +185,7 @@ function parse_opts()
         [ $spare_preserve -eq 1 ] || cleanup_images+=( "$img" )
         qemu_args+=(
             "-drive"
-            "if=ide,file=$img,snapshot=on"
+            "if=ide,file=$img,$drive_opts"
         )
     done
 
