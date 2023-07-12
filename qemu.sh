@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-function abspath() { echo "$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")/$*"; }
-
 function find_kernel()
 {
     local paths=(
@@ -65,7 +63,7 @@ function make_spare_drive()
     local i="$1" size="$2"
     shift 2
 
-    local path="$(abspath "$i.img")"
+    local path="$i.img"
     fallocate -l "$size" "$path"
     echo "$path"
 }
@@ -139,7 +137,7 @@ function parse_opts()
 
     qemu_args=()
     kernel_image=$(find_kernel)
-    rootfs_image=$(abspath rootfs.img)
+    rootfs_image=rootfs.img
     kernel_args=()
     spare_drives=()
     spare_drives_in_mem=()
